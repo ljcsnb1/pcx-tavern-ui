@@ -1,0 +1,20 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* 语义配色 — 都市灰色地带 */
+  --c-primary: #e8537a;
+  --c-background: #1a1310;
+  --c-surface: #281d18;
+  --c-accent: #ff8c42;
+  --c-text-muted: #7a6a5e;
+  --c-text-primary: #d4c4b0;
+  --c-danger: #c93838;
+
+  /* 字体 */
+  --font-main: 'Sarasa UI SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-mono: 'Sarasa Mono SC', 'Courier New', 'Consolas', monospace;
+}

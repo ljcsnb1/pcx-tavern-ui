@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "系统": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前时间": {
+          "default": "",
+          "type": "string"
+        },
+        "当前位置": {
+          "default": "",
+          "type": "string"
+        },
+        "场景状态": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "玩家": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "名字": {
+          "default": "Daniel",
+          "type": "string"
+        }
+      }
+    },
+    "当前NPC": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "姓名": {
+          "default": "",
+          "type": "string"
+        },
+        "类型标签": {
+          "default": "",
+          "type": "string"
+        },
+        "年龄": {
+          "default": 0,
+          "type": "number"
+        },
+        "性格": {
+          "default": "",
+          "type": "string"
+        },
+        "样貌": {
+          "default": "",
+          "type": "string"
+        },
+        "着装": {
+          "default": "",
+          "type": "string"
+        },
+        "姿势": {
+          "default": "",
+          "type": "string"
+        },
+        "奶子": {
+          "default": "",
+          "type": "string"
+        },
+        "小穴": {
+          "default": "",
+          "type": "string"
+        },
+        "菊花": {
+          "default": "",
+          "type": "string"
+        },
+        "红唇": {
+          "default": "",
+          "type": "string"
+        },
+        "玉足": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "行动建议": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "A": {
+          "default": "",
+          "type": "string"
+        },
+        "B": {
+          "default": "",
+          "type": "string"
+        },
+        "C": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    }
+  }
+}
