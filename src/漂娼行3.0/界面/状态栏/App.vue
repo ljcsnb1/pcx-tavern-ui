@@ -23,25 +23,37 @@
         <span class="scene-value">{{ store.data.系统.场景状态 }}</span>
       </div>
 
-      <!-- NPC状态面板 -->
-      <NpcPanel v-if="has_npc" />
+      <!-- NPC状态面板 — 多NPC动态渲染 -->
+      <template v-if="npc_entries.length">
+        <NpcPanel
+          v-for="[name, npc] in npc_entries"
+          :key="name"
+          :name="name"
+          :npc="npc"
+        />
+      </template>
       <div class="npc-empty" v-else>
         <span class="npc-empty-text">无在场NPC</span>
       </div>
 
-      <!-- 行动建议 -->
+      <!-- NPC数量提示（多NPC时显示） -->
+      <div class="npc-count" v-if="npc_entries.length > 1">
+        <span class="npc-count-text">在场 {{ npc_entries.length }} 人</span>
+      </div>
+
+      <!-- 行动建议 — 优先用MVU变量，fallback从正文解析 -->
       <div class="actions">
         <div class="action-item">
           <span class="action-tag">A</span>
-          <span class="action-text">{{ store.data.行动建议.A || '—' }}</span>
+          <span class="action-text">{{ actions.A || '—' }}</span>
         </div>
         <div class="action-item">
           <span class="action-tag">B</span>
-          <span class="action-text">{{ store.data.行动建议.B || '—' }}</span>
+          <span class="action-text">{{ actions.B || '—' }}</span>
         </div>
         <div class="action-item">
           <span class="action-tag">C</span>
-          <span class="action-text">{{ store.data.行动建议.C || '—' }}</span>
+          <span class="action-text">{{ actions.C || '—' }}</span>
         </div>
       </div>
     </div>
@@ -57,10 +69,92 @@ const store = useDataStore();
 
 const expanded = ref(true);
 
-const has_npc = computed(() => {
-  const npc = store.data.当前NPC;
-  return npc && npc.姓名;
+/** NPC record 条目数组 [name, npc_data][] */
+const npc_entries = computed(() => {
+  const record = store.data.当前NPC;
+  if (!record || typeof record !== 'object') return [];
+  return Object.entries(record).filter(([name, npc]) => {
+    // 过滤掉键名为空或值为空对象的情况
+    return name && Object.keys(npc as object).length > 0;
+  }) as [string, typeof record[string]][];
 });
+
+/** 行动建议 — MVU变量优先，正文fallback */
+const actions = computed(() => {
+  const mvu_actions = store.data.行动建议;
+  const a = mvu_actions?.A?.trim();
+  const b = mvu_actions?.B?.trim();
+  const c = mvu_actions?.C?.trim();
+
+  // 如果MVU变量有值，直接用
+  if (a && b && c) {
+    return { A: a, B: b, C: c };
+  }
+
+  // Fallback: 从当前消息正文解析 A/B/C
+  const parsed = parse_actions_from_message();
+  if (parsed) {
+    return parsed;
+  }
+
+  // 最终fallback: 显示MVU变量中有的部分
+  return {
+    A: a || '',
+    B: b || '',
+    C: c || '',
+  };
+});
+
+/**
+ * 从当前消息正文中解析 A/B/C 行动建议。
+ *
+ * 支持的格式（从JSONL观察到的真实输出格式）：
+ *   "A. 订个包间，让她上人——正规流程，进场选妃\nB. 问她...\nC. 直接说..."
+ *   "A. 让她们都坐下，先喝一杯再说 B. 直接点名... C. 站起来..."
+ *
+ * 策略：取 <StatusPlaceHolderImpl/> 或 <UpdateVariable> 标签之前
+ * 的最后一段包含 A. B. C. 的文本块。
+ */
+function parse_actions_from_message(): { A: string; B: string; C: string } | null {
+  try {
+    const msg_id = getCurrentMessageId();
+    const messages = getChatMessages(msg_id, { role: 'assistant' });
+    if (!messages || messages.length === 0) return null;
+
+    const mes = messages[0].message;
+    if (!mes) return null;
+
+    // 截取 StatusPlaceHolderImpl 之前的内容
+    const beforePlaceholder = mes.split('<StatusPlaceHolderImpl')[0];
+    // 再截取 UpdateVariable 之前
+    const beforeUpdate = beforePlaceholder.split('<UpdateVariable')[0];
+
+    // 从后往前找包含 A. B. C. 的文本块
+    // 用正则匹配最后的 A. ... B. ... C. ... 模式
+    const actionRegex = /A[.、．:：]\s*(.+?)(?=\s*B[.、．:：]|$)/s;
+    const bRegex = /B[.、．:：]\s*(.+?)(?=\s*C[.、．:：]|$)/s;
+    const cRegex = /C[.、．:：]\s*(.+?)(?=\n|$)/s;
+
+    const aMatch = beforeUpdate.match(actionRegex);
+    const bMatch = beforeUpdate.match(bRegex);
+    const cMatch = beforeUpdate.match(cRegex);
+
+    if (aMatch && bMatch && cMatch) {
+      const cleanA = aMatch[1].trim().replace(/\n/g, ' ');
+      const cleanB = bMatch[1].trim().replace(/\n/g, ' ');
+      const cleanC = cMatch[1].trim().replace(/\n/g, ' ');
+
+      if (cleanA && cleanB && cleanC) {
+        return { A: cleanA, B: cleanB, C: cleanC };
+      }
+    }
+
+    return null;
+  } catch (e) {
+    console.warn('[状态栏] 从正文解析行动建议失败:', e);
+    return null;
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -175,6 +269,17 @@ const has_npc = computed(() => {
 .npc-empty-text {
   color: var(--c-text-muted);
   font-size: 0.8rem;
+}
+
+.npc-count {
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.npc-count-text {
+  color: var(--c-text-muted);
+  font-size: 0.7rem;
+  opacity: 0.8;
 }
 
 .actions {

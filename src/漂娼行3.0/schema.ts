@@ -14,21 +14,23 @@ export const Schema = z.object({
     名字: z.string().prefault('Daniel'),
   }).prefault({}),
 
-  // ── 当前NPC（盲盒NPC整体替换，不在场时清空为 {}） ──
-  当前NPC: z.object({
-    姓名: z.string().prefault(''),
-    类型标签: z.string().prefault(''),
-    年龄: z.coerce.number().prefault(0),
-    性格: z.string().prefault(''),
-    样貌: z.string().prefault(''),
-    着装: z.string().prefault(''),
-    姿势: z.string().prefault(''),
-    奶子: z.string().prefault(''),
-    小穴: z.string().prefault(''),
-    菊花: z.string().prefault(''),
-    红唇: z.string().prefault(''),
-    玉足: z.string().prefault(''),
-  }).prefault({}),
+  // ── 当前NPC（z.record，键为NPC姓名；空对象 {} 表示无NPC在场） ──
+  当前NPC: z.record(
+    z.string().describe('NPC姓名'),
+    z.object({
+      类型标签: z.string().prefault(''),
+      年龄: z.coerce.number().prefault(0),
+      性格: z.string().prefault(''),
+      样貌: z.string().prefault(''),
+      着装: z.string().prefault(''),
+      姿势: z.string().prefault(''),
+      奶子: z.string().prefault(''),
+      小穴: z.string().prefault(''),
+      菊花: z.string().prefault(''),
+      红唇: z.string().prefault(''),
+      玉足: z.string().prefault(''),
+    }).prefault({})
+  ).prefault({}),
 
   // ── 行动建议（场景驱动生成） ──
   行动建议: z.object({

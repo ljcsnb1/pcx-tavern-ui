@@ -33,54 +33,58 @@
     "当前NPC": {
       "default": {},
       "type": "object",
-      "properties": {
-        "姓名": {
-          "default": "",
-          "type": "string"
-        },
-        "类型标签": {
-          "default": "",
-          "type": "string"
-        },
-        "年龄": {
-          "default": 0,
-          "type": "number"
-        },
-        "性格": {
-          "default": "",
-          "type": "string"
-        },
-        "样貌": {
-          "default": "",
-          "type": "string"
-        },
-        "着装": {
-          "default": "",
-          "type": "string"
-        },
-        "姿势": {
-          "default": "",
-          "type": "string"
-        },
-        "奶子": {
-          "default": "",
-          "type": "string"
-        },
-        "小穴": {
-          "default": "",
-          "type": "string"
-        },
-        "菊花": {
-          "default": "",
-          "type": "string"
-        },
-        "红唇": {
-          "default": "",
-          "type": "string"
-        },
-        "玉足": {
-          "default": "",
-          "type": "string"
+      "propertyNames": {
+        "type": "string",
+        "description": "NPC姓名"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "类型标签": {
+            "default": "",
+            "type": "string"
+          },
+          "年龄": {
+            "default": 0,
+            "type": "number"
+          },
+          "性格": {
+            "default": "",
+            "type": "string"
+          },
+          "样貌": {
+            "default": "",
+            "type": "string"
+          },
+          "着装": {
+            "default": "",
+            "type": "string"
+          },
+          "姿势": {
+            "default": "",
+            "type": "string"
+          },
+          "奶子": {
+            "default": "",
+            "type": "string"
+          },
+          "小穴": {
+            "default": "",
+            "type": "string"
+          },
+          "菊花": {
+            "default": "",
+            "type": "string"
+          },
+          "红唇": {
+            "default": "",
+            "type": "string"
+          },
+          "玉足": {
+            "default": "",
+            "type": "string"
+          }
         }
       }
     },

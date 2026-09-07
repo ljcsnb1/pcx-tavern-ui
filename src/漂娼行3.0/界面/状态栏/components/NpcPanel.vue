@@ -2,7 +2,7 @@
   <div class="npc-panel">
     <!-- NPC标题行 -->
     <div class="npc-header">
-      <span class="npc-name">{{ npc.姓名 }}</span>
+      <span class="npc-name">{{ name }}</span>
       <span class="npc-tag" v-if="npc.类型标签">{{ npc.类型标签 }}</span>
       <span class="npc-age" v-if="npc.年龄">{{ npc.年龄 }}岁</span>
     </div>
@@ -57,11 +57,28 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useDataStore } from '../store';
 
-const store = useDataStore();
+/** 单个NPC的数据结构（z.record value 类型） */
+type NpcData = {
+  类型标签: string;
+  年龄: number;
+  性格: string;
+  样貌: string;
+  着装: string;
+  姿势: string;
+  奶子: string;
+  小穴: string;
+  菊花: string;
+  红唇: string;
+  玉足: string;
+};
 
-const npc = computed(() => store.data.当前NPC);
+const props = defineProps<{
+  name: string;
+  npc: NpcData;
+}>();
+
+const npc = computed(() => props.npc);
 
 const has_appearance = computed(() => {
   const n = npc.value;
