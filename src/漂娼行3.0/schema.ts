@@ -15,6 +15,7 @@ export const Schema = z.object({
   }).prefault({}),
 
   // ── 当前NPC（z.record，键为NPC姓名；空对象 {} 表示无NPC在场） ──
+  // 禁止使用"姓名"作为键名或平铺字段——键名本身就是NPC姓名
   当前NPC: z.record(
     z.string().describe('NPC姓名'),
     z.object({
